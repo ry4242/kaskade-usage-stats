@@ -165,7 +165,9 @@ def analyzePoke(poke):
 		stalliness += 0.5
 	if len(set(['healbell','aromatherapy']).intersection(poke['moves'])) != 0:
 		stalliness += 0.5
-	if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens', 'darkaura', 'fairyaura', 'infiltrator', 'parentalbond', 'protean', 'strongjaw', 'sweetveil', 'toughclaws','aerilate','normalize','pixilate','refrigerate']:
+	# swse
+	if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens', 'darkaura', 'fairyaura', 'infiltrator', 'parentalbond', 'protean', 'strongjaw', 'sweetveil', 'toughclaws','aerilate','normalize','pixilate','refrigerate',
+		'arcanum', 'cataclysmiclight', 'dreamer', 'drizzle', 'drought', 'dustdevil', 'secretion', 'standoff', 'stormfront']:
 		stalliness -= 0.5
 	if poke['ability'] in ['flareboost', 'guts', 'quickfeet'] and poke['item'] == 'flameorb':
 		stalliness -= 1.0
@@ -177,8 +179,12 @@ def analyzePoke(poke):
 		stalliness -= 1.0
 	elif len(set(['block','meanlook','spiderweb','pursuit']).intersection(poke['moves'])) != 0:
 		stalliness -= 0.5
-	if poke['ability'] in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware', 'aromaveil', 'bulletproof', 'cheekpouch', 'gooey']:
+	# swse
+	if poke['ability'] in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware', 'aromaveil', 'bulletproof', 'cheekpouch', 'gooey',
+		'condensation', 'hayfever', 'incantation', 'pollution', 'sandstream', 'seance', 'snowwarning']:
 		stalliness += 0.5
+	if poke['ability'] == 'galeforce':
+		stalliness -= 0.5
 	if poke['ability'] == 'poisonheal' and poke['item'] == 'toxicorb':
 		stalliness += 0.5
 	if poke['ability'] in ['slowstart','truant','furcoat']:
@@ -229,7 +235,24 @@ def analyzePoke(poke):
 		stalliness -= 1.0
 	if len(set(['guillotine', 'fissure', 'sheercold']).intersection(poke['moves'])) != 0:
 		stalliness -= 1.0
-	if poke['ability'] in ['sandstream','snowwarning'] or 'sandstorm' in poke['moves'] or 'hail' in poke['moves']:
+	if poke['ability'] in [
+		#stall weathers: fairy dust, fog, hail, paranormal activity, pollen storm, sand, smog
+		'incantation', 'condensation', 'snowwarning', 'seance', 'hayfever', 'sandstream', 'pollution',
+		#neutral weathers: blood moon, magnetosphere
+		'eventide', 'ferroflux',
+		#offensive weathers: battle aura, dragon force, dreamscape, dust storm, pheromones, rain, sun, thunderstorm, ultra radiance
+		'standoff', 'arcanum', 'dreamer', 'dustdevil', 'secretion', 'drizzle', 'primordialsea', 'drought', 'desolateland', 'stormfront', 'cataclysmiclight',
+		#special: strong winds
+		'galeforce'] \
+		or any(m in poke['moves'] for m in [
+		#stall weathers: fairy dust, fog, hail, paranormal activity, pollen storm, sand, smog
+		'sprinkle', 'foghorn', 'hail', 'haunt', 'pollinate', 'sandstorm', 'smogspread',
+		#neutral weathers: blood moon, magnetosphere
+		'bloodmoon', 'magnetize',
+		#offensive weathers: battle aura, dragon force, dreamscape, dust storm, pheromones, rain, sun, thunderstorm
+		'auraprojection', 'dragonforce', 'daydream', 'duststorm', 'swarmsignal', 'raindance', 'sunnyday', 'supercell',
+		#special: strong winds
+		'strongwinds']):
 		stalliness += 0.5
 	if species in ['latios', 'latias'] and poke['item'] == 'souldew':
 		stalliness -= 0.5
@@ -323,85 +346,77 @@ def analyzeTeam(team):
 
 	#don't put anything before weather
 
-	#rain
-	count = 0
-	detected = False
-	for poke in team:
-		if poke['ability'] in ['drizzle','primordialsea']:
-			detected = True
-			break
-		elif poke['item'] == 'damprock' and 'raindance' in poke['moves']:
-			detected = True
-			break
-		elif 'raindance' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('rain')
+	# swse
+	WEATHERGIES = [
+		# climate
+		('sun',          ['drought','desolateland'],             'sunnyday',      [('weatherballoon','sunnyday')]),
+		('rain',         ['drizzle','primordialsea'],            'raindance',     [('weatherballoon','raindance')]),
+		('hail',         ['snowwarning'],                        'hail',          [('weatherballoon','hail')]),
+		('bloodmoon',    ['eventide'],                           'bloodmoon',     [('weatherballoon','bloodmoon')]),
+		('fog',          ['condensation'],                       'foghorn',       [('weatherballoon','foghorn')]),
+		# irritant
+		('sand',         ['sandstream'],                         'sandstorm',     [('volatilespray','sandstorm')]),
+		('dust',         ['dustdevil'],                          'duststorm',     [('volatilespray','duststorm')]),
+		('pollen',       ['hayfever'],                           'pollinate',     [('volatilespray','pollinate')]),
+		('pheromones',   ['secretion'],                          'swarmsignal',   [('volatilespray','swarmsignal')]),
+		('smog',         ['pollution'],                          'smogspread',    [('volatilespray','smogspread')]),
+		('fairydust',    ['incantation'],                        'sprinkle',      [('volatilespray','sprinkle')]),
+		# energy
+		('battleaura',   ['standoff'],                           'auraprojection',[('energychannelizer','auraprojection')]),
+		('pactivity',    ['seance'],                             'haunt',         [('energychannelizer','haunt')]),
+		('dreamscape',   ['dreamer'],                            'daydream',      [('energychannelizer','daydream')]),
+		('dragonforce',  ['arcanum'],                            'dragonforce',   [('energychannelizer','dragonforce')]),
+		('thunderstorm', ['stormfront'],                         'supercell',     [('energychannelizer','supercell')]),
+		('magnetosphere',['ferroflux'],                          'magnetize',     [('energychannelizer','magnetize')]),
+		# clearing
+		('strongwinds',  ['galeforce'],                          'strongwinds',   [('portableturbine','strongwinds')])
+	]
 
-	#sun
-	count = 0
-	detected = False
-	for poke in team:
-		if poke['ability'] in ['drought','desolateland']:
-			detected = True
-			break
-		elif [species,poke['item']] == ['charizard','charizarditey']:
-			detected = True
-			break
-		elif poke['item'] == 'heatrock' and 'sunnyday' in poke['moves']:
-			detected = True
-			break
-		elif 'sunnyday' in poke['moves']:
-			count += 1
-			if count > 1:
+	weather_tags_found = []
+	for (wtag, abilities, setup_move, item_pairs) in WEATHERGIES:
+		count = 0
+		detected = False
+		for poke in team:
+			if poke['ability'] in abilities:
 				detected = True
 				break
-	if detected:
-		tags.append('sun')
+			for (item, move) in item_pairs:
+				if poke['item'] == item and move in poke['moves']:
+					detected = True
+					break
+			if detected:
+				break
+			if setup_move and setup_move in poke['moves']:
+				count += 1
+				if count > 1:
+					detected = True
+					break
+		if detected:
+			tags.append(wtag)
+			weather_tags_found.append(wtag)
 
-	#sand
-	count = 0
-	detected = False
-	for poke in team:
-		if poke['ability'] == 'sandstream':
-			detected = True
-			break
-		elif poke['item'] == 'smoothrock' and 'sandstorm' in poke['moves']:
-			detected = True
-			break
-		elif 'sandstorm' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
+	if 'sun' not in tags:
+		for poke in team:
+			if poke['species'] in ['Charizard','charizard'] and poke['item'] == 'charizarditey':
+				tags.append('sun')
+				weather_tags_found.append('sun')
 				break
-	if detected:
-		tags.append('sand')
 
-	#hail
-	count = 0
-	detected = False
-	for poke in team:
-		if poke['ability'] == 'snowwarning':
-			detected = True
-			break
-		elif poke['item'] == 'icyrock' and 'hail' in poke['moves']:
-			detected = True
-			break
-		elif 'hail' in poke['moves']:
-			count += 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('hail')
-	if len(tags) == 4:
+	climate = {'sun', 'rain', 'hail', 'bloodmoon', 'fog'}
+	irritant = {'sand', 'dust', 'pollen', 'pheromones', 'smog', 'fairydust'}
+	energy = {'battleaura', 'pactivity', 'dreamscape', 'dragonforce', 'thunderstorm', 'magnetosphere'}
+
+	has_climate = any(w in weather_tags_found for w in climate)
+	has_irritant = any(w in weather_tags_found for w in irritant)
+	has_energy = any(w in weather_tags_found for w in energy)
+
+	num_weather = len(weather_tags_found)
+
+	if has_climate and has_irritant and has_energy:
 		tags.append('allweather')
-	elif len(tags) > 1:
+	elif num_weather > 1:
 		tags.append('multiweather')
-	elif len(tags) == 0:
+	elif num_weather == 0:
 		tags.append('weatherless')
 
 	#baton pass
@@ -436,14 +451,12 @@ def analyzeTeam(team):
 
 	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
 		tags.append('trickroom')
-		if 'sun' in tags:
-			tags.append('tricksun')
-		if 'rain' in tags:
-			tags.append('trickrain')
-		if 'sand' in tags:
-			tags.append('tricksand')
-		if 'hail' in tags:
-			tags.append('trickhail')	
+		for wtag in ['sun', 'rain', 'hail', 'bloodmoon', 'fog',
+				'sand', 'dust', 'pollen', 'pheromones', 'smog', 'fairydust',
+				'battleaura', 'pactivity', 'dreamscape', 'dragonforce', 'thunderstorm', 'magnetosphere',
+				'strongwinds']:
+			if wtag in tags:
+				tags.append('trick' + wtag)
 
 	#gravity
 	count = [0,0]
@@ -527,17 +540,19 @@ def analyzeTeam(team):
 			tags.append('mono'+monotype.lower())
 
 	#stalliness stuff
+	_all_weathergy_tags = ['sun', 'rain', 'hail', 'bloodmoon', 'fog', 'sand', 'dust', 
+							'pollen', 'pheromones', 'smog', 'fairydust', 'battleaura', 
+							'pactivity', 'dreamscape', 'dragonforce', 'thunderstorm', 
+							'magnetosphere',
+							'strongwinds']
+
 	if tstalliness <= -1.0:
 		tags.append('hyperoffense')
 		if 'multiweather' not in tags and 'allweather' not in tags and 'weatherless' not in tags:
-			if 'rain' in tags:
-				tags.append('rainoffense')
-			elif 'sun' in tags:
-				tags.append('sunoffense')
-			elif 'sand' in tags:
-				tags.append('sandoffense')
-			else:
-				tags.append('hailoffense')
+			for wtag in _all_weathergy_tags:
+				if wtag in tags:
+					tags.append(wtag+'offense')
+					break
 	elif tstalliness <= 0.0:
 		tags.append('offense')
 	elif tstalliness <= 1.0:
@@ -547,14 +562,10 @@ def analyzeTeam(team):
 	else:
 		tags.append('stall')
 		if 'multiweather' not in tags and 'allweather' not in tags and 'weatherless' not in tags:
-			if 'rain' in tags:
-				tags.append('rainstall')
-			elif 'sun' in tags:
-				tags.append('sunstall')
-			elif 'sand' in tags:
-				tags.append('sandstall')
-			else:
-				tags.append('hailstall')
+			for wtag in _all_weathergy_tags:
+				if wtag in tags:
+					tags.append(wtag+'stall')
+					break
 
 	return {'bias':tbias, 'stalliness': tstalliness, 'tags': tags}
 
