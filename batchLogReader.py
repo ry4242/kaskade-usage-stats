@@ -367,6 +367,8 @@ def LogReader(filename,tier,movesets,ratings):
 						speciesBase = 'Zygarde'
 					elif species.startswith('Mimikyu'):
 						speciesBase = 'Mimikyu'
+					elif species.startswith('Stackem'):
+						speciesBase = 'Stackem'
 					elif species == 'Necrozma-Ultra':
 						speciesBase = 'Necrozma'
 					elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -413,6 +415,8 @@ def LogReader(filename,tier,movesets,ratings):
 						speciesBase = 'Zygarde'
 					elif species.startswith('Mimikyu'):
 						speciesBase = 'Mimikyu'
+					elif species.startswith('Stackem'):
+						speciesBase = 'Stackem'
 					elif species == 'Necrozma-Ultra':
 						speciesBase = 'Necrozma'
 					elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -594,6 +598,8 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = 'Zygarde'
 							elif species.startswith('Mimikyu'):
 								speciesBase = 'Mimikyu'
+							elif species.startswith('Stackem'):
+								speciesBase = 'Stackem'
 							elif species == 'Necrozma-Ultra':
 								speciesBase = 'Necrozma'
 							elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -697,6 +703,8 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = 'Zygarde'
 							elif species.startswith('Mimikyu'):
 								speciesBase = 'Mimikyu'
+							elif species.startswith('Stackem'):
+								speciesBase = 'Stackem'
 							elif species == 'Necrozma-Ultra':
 								speciesBase = 'Necrozma'
 							elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -760,6 +768,8 @@ def LogReader(filename,tier,movesets,ratings):
 						speciesBase = 'Zygarde'
 					elif species.startswith('Mimikyu'):
 						speciesBase = 'Mimikyu'
+					elif species.startswith('Stackem'):
+						speciesBase = 'Stackem'
 					elif species == 'Necrozma-Ultra':
 						speciesBase = 'Necrozma'
 					elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -954,6 +964,8 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = 'Zygarde'
 							elif species.startswith('Mimikyu'):
 								speciesBase = 'Mimikyu'
+							elif species.startswith('Stackem'):
+								speciesBase = 'Stackem'
 							elif species == 'Necrozma-Ultra':
 								speciesBase = 'Necrozma'
 							elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
@@ -1057,6 +1069,8 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = 'Zygarde'
 							elif species.startswith('Mimikyu'):
 								speciesBase = 'Mimikyu'
+							elif species.startswith('Stackem'):
+								speciesBase = 'Stackem'
 							elif species == 'Necrozma-Ultra':
 								speciesBase = 'Necrozma'
 							elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
