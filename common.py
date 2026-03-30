@@ -67,6 +67,7 @@ def getBattleFormatsData():
 	return json.loads(_eval_js('exports={},' + js + 'process.stdout.write(JSON.stringify(exports.BattleFormatsData))'))
 
 aliases={
+	'Castform-Whirly': ['Castformwhirly'],
 	'Rotom-Stereo': ['Rotom-St','Rotom- St','Rotom-st'],
 	'Rotom-Junk': ['Rotom-J','Rotom -J','Rotom-j'],
 	'Rotom-Sway': ['Rotom-Sw','Rotom -Sw', 'Rotom-sw'],
