@@ -200,7 +200,7 @@ def LogReader(filename,tier,movesets,ratings):
 			else:
 				whowon = 2
 	if ratings == None:
-		if 'p1rating' not in log and 'p2rating' not in log:
+		if not any('Rated battle' in entry for entry in log.get('inputLog', [])):
 			return False
 		for i in [['p1rating','p1team'],['p2rating','p2team']]:
 			if i[0] in list(log.keys()):
@@ -224,7 +224,7 @@ def LogReader(filename,tier,movesets,ratings):
 				#acre= rpr-1.4079126393*rprd
 				#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'	
 	else:
-		if 'p1rating' not in log and 'p2rating' not in log:
+		if not any('Rated battle' in entry for entry in log.get('inputLog', [])):
 			return False
 		for player in [log['p1'],log['p2']]:
 			if player not in list(ratings.keys()):
