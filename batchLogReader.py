@@ -152,7 +152,7 @@ def getTeamsFromLog(log,mrayAllowed):
 
 def LogReader(filename,tier,movesets,ratings):
 
-	mrayAllowed = tier not in ['ubers','battlefactory','megamons', 'gen6ubers', 'gen7ubers', 'gen7pokebankubers']
+	mrayAllowed = tier not in ['battlefactory','megamons', 'gen6ubers', 'gen7ubers', 'gen7pokebankubers']
 
 	file = open(filename)
 	raw = file.readline()
@@ -200,6 +200,8 @@ def LogReader(filename,tier,movesets,ratings):
 			else:
 				whowon = 2
 	if ratings == None:
+		if 'p1rating' not in log and 'p2rating' not in log:
+			return False
 		for i in [['p1rating','p1team'],['p2rating','p2team']]:
 			if i[0] in list(log.keys()):
 				rating[i[1]]={}
