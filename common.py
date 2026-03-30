@@ -2,7 +2,7 @@
 
 import string
 import math
-import js2py
+import subprocess
 import urllib.request, urllib.error, urllib.parse
 import ujson as json
 
@@ -20,13 +20,6 @@ def weighting(rating,deviation,cutoff):
 	if deviation > 100 and cutoff > 1500:
 		return 0.0
 	return (math.erf(float(rating-cutoff)/float(deviation)/math.sqrt(2.0))+1.0)/2.0
-	#return victoryChance(rating,deviation,cutoff,0.0)
-	#this is for logistic weighting
-	#s=math.sqrt(3.0)*float(deviation)/math.pi
-	#return (math.tanh(float(rating-cutoff)/s/2.0)+1.0)/2.0
-	#this is for extreme value weighting
-	#b=math.sqrt(6.0)*float(deviation)/math.pi
-	#return 1.0-math.exp(-math.exp(-float(cutoff-rating)/b))
 
 #if (r2,d2)=(1500,350) this becomes the GXE formula
 def victoryChance(r1,d1,r2,d2):
@@ -49,7 +42,6 @@ def readTable(filename):
 		name = line[2][1:]
 
 		while name[len(name)-1] == ' ': 
-			#remove extraneous spaces
 			name = name[0:len(name)-1]
 
 		pct = line[3][1:line[3].index('%')]
@@ -58,19 +50,33 @@ def readTable(filename):
 
 	return usage,nBattles
 
-
+def _eval_js(js_code):
+	result = subprocess.run(['node', '-e', js_code], capture_output=True, text=True)
+	if result.returncode != 0:
+		raise RuntimeError('Node.js error: ' + result.stderr)
+	return result.stdout.strip()
 
 def getFormats():
-	js=urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/config/formats.js").read()
+	js = urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/config/formats.js").read().decode('utf-8')
 	print('Updating tiers')
-	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.Formats)'))
+	return json.loads(_eval_js('exports={},' + js + 'process.stdout.write(JSON.stringify(exports.Formats))'))
 
 def getBattleFormatsData():
-	js=urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/data/formats-data.js").read()
+	js = urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/data/formats-data.js").read().decode('utf-8')
 	print('Updating tiers')
-	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.BattleFormatsData)'))
+	return json.loads(_eval_js('exports={},' + js + 'process.stdout.write(JSON.stringify(exports.BattleFormatsData))'))
 
 aliases={
+	'Rotom-Stereo': ['Rotom-St','Rotom- St','Rotom-st'],
+	'Rotom-Junk': ['Rotom-J','Rotom -J','Rotom-j'],
+	'Rotom-Sway': ['Rotom-Sw','Rotom -Sw', 'Rotom-sw'],
+	'Rotom-Brawl': ['Rotom-B','Rotom -B', 'Rotom-b'],
+	'Rotom-Web': ['Rotom-We','Rotom -We',' Rotom-we'],
+	'Rotom-Sol': ['Rotom-So','Rotom -So',' Rotom-so'],
+	'Mosskrat': ['Mosskrat-Tide-Bloom', 'Mosskrattidebloom'],
+	'Blurrun': ['Blurrun-Charged', 'Blurruncharged'],
+	'Botnyak': ['Botnyak-LB', 'Botnyaklb', 'Botnyak-LR', 'Botnyaklr', 'Botnyak-LG', 'Botnyaklg', 'Botnyak-DB', 'Botnyakdb', 'Botnyak-DR', 'Botnyakdr', 'Botnyak-DG', 'Botnyakdg', ],
+	# swse
 	'Dudunsparce': ['Dudunsparce-Three-Segment', 'Dudunsparcethreesegment'],
 	'Maushold': ['Maushold-Four', 'Mausholdfour'],
 	'Tatsugiri': ['Tatsugiridroopy', 'Tatsugiri-Droopy', 'Tatsugiristretchy', 'Tatsugiri-Stretchy'],
@@ -81,7 +87,7 @@ aliases={
 	'Giratina-Origin': ['Giratina-O'],
 	'Unown': ['Unown-B','Unown-C','Unown-D','Unown-E','Unown-F','Unown-G','Unown-H','Unown-I','Unown-J','Unown-K','Unown-L','Unown-M','Unown-N','Unown-O','Unown-P','Unown-Q','Unown-R','Unown-S','Unown-T','Unown-U','Unown-V','Unown-W','Unown-X','Unown-Y','Unown-Z','Unown-Exclamation','Unown-Question','Unownb','Unownc','Unownd','Unowne','Unownf','Unowng','Unownh','Unowni','Unownj','Unownk','Unownl','Unownm','Unownn','Unowno','Unownp','Unownq','Unownr','Unowns','Unownt','Unownu','Unownv','Unownw','Unownx','Unowny','Unownz','Unownexclamation','Unownquestion'],
 	'Burmy': ['Burmy-G','Burmy-S', 'Burmy-Sandy', 'Burmysandy', 'Burmy-Trash', 'Burmytrash'],
-	'Castform': ['Castform-Snowy','Castform-Rainy','Castform-Sunny'],
+	'Castform': ['Castform-Sunny', 'Castform-Rainy', 'Castform-Snowy', 'Castform-Shady', 'Castform-Sandy', 'Castform-Dusty', 'Castform-Allergy', 'Castform-Swarmy', 'Castform-Smoggy', 'Castform-Lovely', 'Castform-Gutsy', 'Castform-Spooky', 'Castform-Zenny', 'Castform-Sorcery', 'Castform-Zappy', 'Castform-Windy'],
 	'Cherrim': ['Cherrim-Sunshine'],
 	'Shellos': ['Shellos-East','Shelloseast'],
 	'Gastrodon': ['Gastrodon-East','Gastrodoneast'],
@@ -98,10 +104,10 @@ aliases={
 	'Kyurem-White': ['Kyurem-W'],
 	'Pichu': ['Pichu-Spiky-eared','Spiky Pichu','Pichuspikyeared','Spikypichu'],
 	'Rotom-Heat': ['Rotom-H','Rotom- H','Rotom-h'],
-	'Rotom-Wash': ['Rotom-W','Rotom -W','Rotom-w'],
+	'Rotom-Wash': ['Rotom-Wa','Rotom -Wa','Rotom-wa'],
 	'Rotom-Frost': ['Rotom-F','Rotom -F', 'Rotom-f'],
-	'Rotom-Fan': ['Rotom-S','Rotom -S', 'Rotom-s'],
-	'Rotom-Mow': ['Rotom-C','Rotom -C',' Rotom-c'],
+	'Rotom-Fan': ['Rotom-F','Rotom -F', 'Rotom-f'],
+	'Rotom-Mow': ['Rotom-M','Rotom -M',' Rotom-m'],
 	'Deoxys-Defense': ['Deoxys-D'],
 	'Deoxys-Attack': ['Deoxys-A'],
 	'Deoxys-Speed': ['Deoxys-S'],
@@ -183,6 +189,16 @@ aliases={
 }
 
 nonSinglesFormats = [
+	'gen9doublesou',
+	'gen9doublesubers',
+	'gen9doublesuu',
+	'gen9doublesru',
+	'gen9doublesnu',
+	'gen9doubleslc',
+	'gen9swsevgc',
+	'gen9doublesmonotype',
+	'gen9doublesbattlefields',
+	# swse ^
 	'battlespotdoubles',
 	'battlespottriples',
 	'gen5smogondoubles',
@@ -224,6 +240,9 @@ nonSinglesFormats = [
 ]
 
 non6v6Formats = [
+	'gen9swsevgc',
+	'gen9swsebss',
+	# swse ^
 	'gen81v1',
 	'battlespotdoubles',
 	'battlespotsingles',
