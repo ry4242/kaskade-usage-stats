@@ -165,6 +165,7 @@ def LogReader(filename,tier,movesets,ratings):
 	except ValueError:
 		sys.stderr.write(filename+' is not a valid log.\n')
 		return False
+	print(filename, list(log.keys()))
 
 	#determine log type
 	spacelog = True
