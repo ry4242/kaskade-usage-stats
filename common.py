@@ -61,12 +61,12 @@ def readTable(filename):
 
 
 def getFormats():
-	js=urllib.request.urlopen("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/config/formats.js").read()
+	js=urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/config/formats.js").read()
 	print('Updating tiers')
 	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.Formats)'))
 
 def getBattleFormatsData():
-	js=urllib.request.urlopen("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/formats-data.js").read()
+	js=urllib.request.urlopen("https://raw.githubusercontent.com/ry4242/kaskade-showdown/master/data/formats-data.js").read()
 	print('Updating tiers')
 	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.BattleFormatsData)'))
 
