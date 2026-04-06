@@ -20,6 +20,14 @@ file = open('keylookup.json', 'rb')
 keyLookup = json.load(file)
 file.close()
 
+def isRatedBattle(log):
+	if any('Rated battle' in entry for entry in log.get('inputLog', [])):
+		return True
+	for ratingField in ['p1rating', 'p2rating']:
+		if ratingField in list(log.keys()) and log[ratingField]:
+			return True
+	return False
+
 def getTeamsFromLog(log,mrayAllowed):
 	teams={}
 	for team in ['p1team','p2team']:
@@ -200,7 +208,7 @@ def LogReader(filename,tier,movesets,ratings):
 			else:
 				whowon = 2
 	if ratings == None:
-		if not any('Rated battle' in entry for entry in log.get('inputLog', [])):
+		if not isRatedBattle(log):
 			return False
 		for i in [['p1rating','p1team'],['p2rating','p2team']]:
 			if i[0] in list(log.keys()):
@@ -224,7 +232,7 @@ def LogReader(filename,tier,movesets,ratings):
 				#acre= rpr-1.4079126393*rprd
 				#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'	
 	else:
-		if not any('Rated battle' in entry for entry in log.get('inputLog', [])):
+		if not isRatedBattle(log):
 			return False
 		for player in [log['p1'],log['p2']]:
 			if player not in list(ratings.keys()):
@@ -1220,6 +1228,8 @@ def main(argv):
 
 				writeme = []
 				movesets={}
+	if count == 0:
+		sys.stderr.write('No valid rated battles found in '+argv[1]+'\n')
 	if writeme:
 		outname = "Raw/"+tier#+".txt"
 		outfile=gzip.open(outname,'at')
