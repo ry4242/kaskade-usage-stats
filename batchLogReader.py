@@ -28,6 +28,22 @@ def isRatedBattle(log):
 			return True
 	return False
 
+def resolveRatingsPaths(arg):
+	if not arg:
+		return ("ratings.json", "Stats/ratings.txt")
+	if arg.endswith('.txt'):
+		text_path = arg if os.path.dirname(arg) else os.path.join("Stats", arg)
+		json_path = text_path[:-4] + ".json"
+	elif arg.endswith('.json'):
+		json_path = arg
+		base = os.path.basename(arg)
+		text_name = base[:-5] + ".txt"
+		text_path = os.path.join("Stats", text_name)
+	else:
+		json_path = arg + ".json"
+		text_path = os.path.join("Stats", arg + ".txt")
+	return (json_path, text_path)
+
 def getTeamsFromLog(log,mrayAllowed):
 	teams={}
 	for team in ['p1team','p2team']:
@@ -1178,11 +1194,12 @@ def main(argv):
 
 
 	ratings_file = "ratings.json"
+	ratings_text_file = "Stats/ratings.txt"
 	ratings = {}
 	if len(argv) > 3:
+		ratings_file, ratings_text_file = resolveRatingsPaths(argv[3])
 		try:
-			ratings = json.loads(open(argv[3]).readline())
-			ratings_file = argv[3]
+			ratings = json.loads(open(ratings_file).readline())
 		except:
 			ratings = {}
 
@@ -1247,10 +1264,16 @@ def main(argv):
 			msfile.write(json.dumps(movesets[species]))
 			msfile.close()
 
+	d = os.path.dirname(ratings_file)
+	if d and not os.path.exists(d):
+		os.makedirs(d)
 	ratingfile=open(ratings_file,'w+')
 	ratingfile.write(json.dumps(ratings))
 	ratingfile.close()
-	Glicko.write(ratings, "Stats/ratings.txt")
+	d = os.path.dirname(ratings_text_file)
+	if d and not os.path.exists(d):
+		os.makedirs(d)
+	Glicko.write(ratings, ratings_text_file)
 
 if __name__ == "__main__":
     main(sys.argv)
