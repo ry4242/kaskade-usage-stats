@@ -181,7 +181,7 @@ def analyzePoke(poke):
 		stalliness -= 0.5
 	# swse
 	if poke['ability'] in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware', 'aromaveil', 'bulletproof', 'cheekpouch', 'gooey',
-		'condensation', 'hayfever', 'incantation', 'pollution', 'sandstream', 'seance', 'snowwarning']:
+		'condensation', 'eventide', 'ferroflux', 'hayfever', 'incantation', 'pollution', 'sandstream', 'seance', 'snowwarning']:
 		stalliness += 0.5
 	if poke['ability'] == 'galeforce':
 		stalliness -= 0.5
@@ -236,24 +236,19 @@ def analyzePoke(poke):
 	if len(set(['guillotine', 'fissure', 'sheercold']).intersection(poke['moves'])) != 0:
 		stalliness -= 1.0
 	if poke['ability'] in [
-		#stall weathers: fairy dust, fog, hail, paranormal activity, pollen storm, sand, smog
-		'incantation', 'condensation', 'snowwarning', 'seance', 'hayfever', 'sandstream', 'pollution',
-		#neutral weathers: blood moon, magnetosphere
-		'eventide', 'ferroflux',
-		#offensive weathers: battle aura, dragon force, dreamscape, dust storm, pheromones, rain, sun, thunderstorm, ultra radiance
-		'standoff', 'arcanum', 'dreamer', 'dustdevil', 'secretion', 'drizzle', 'primordialsea', 'drought', 'desolateland', 'stormfront', 'cataclysmiclight',
-		#special: strong winds
-		'galeforce'] \
+		# defensive/support base weathergies
+		'snowwarning', 'condensation', 'seance', 'hayfever', 'pollution', 'incantation', 'sandstream', 'ferroflux'] \
 		or any(m in poke['moves'] for m in [
-		#stall weathers: fairy dust, fog, hail, paranormal activity, pollen storm, sand, smog
-		'sprinkle', 'foghorn', 'hail', 'haunt', 'pollinate', 'sandstorm', 'smogspread',
-		#neutral weathers: blood moon, magnetosphere
-		'bloodmoon', 'magnetize',
-		#offensive weathers: battle aura, dragon force, dreamscape, dust storm, pheromones, rain, sun, thunderstorm
-		'auraprojection', 'dragonforce', 'daydream', 'duststorm', 'swarmsignal', 'raindance', 'sunnyday', 'supercell',
-		#special: strong winds
-		'strongwinds']):
+		'hail', 'foghorn', 'haunt', 'pollinate', 'smogspread', 'sprinkle', 'sandstorm', 'magnetize']):
 		stalliness += 0.5
+	if poke['ability'] in [
+		# offensive base weathergies
+		'drought', 'desolateland', 'drizzle', 'primordialsea', 'eventide', 'dustdevil',
+		'secretion', 'standoff', 'dreamer', 'arcanum', 'stormfront', 'cataclysmiclight'] \
+		or any(m in poke['moves'] for m in [
+		'sunnyday', 'raindance', 'bloodmoon', 'duststorm', 'swarmsignal',
+		'auraprojection', 'daydream', 'dragonforce', 'supercell']):
+		stalliness -= 0.5
 	if species in ['latios', 'latias'] and poke['item'] == 'souldew':
 		stalliness -= 0.5
 	if species == 'pikachu' and poke['item'] == 'lightball':
@@ -419,6 +414,17 @@ def analyzeTeam(team):
 	elif num_weather == 0:
 		tags.append('weatherless')
 
+	if 'strongwinds' in weather_tags_found:
+		enhanced_offense = {
+			'sun', 'rain', 'fog', 'dust', 'pheromones', 'battleaura',
+			'pactivity', 'dreamscape', 'dragonforce', 'thunderstorm'}
+		enhanced_support = {
+			'hail', 'bloodmoon', 'pollen', 'smog', 'fairydust', 'sand', 'magnetosphere'}
+		if any(w in weather_tags_found for w in enhanced_offense):
+			tstalliness -= 0.25
+		if any(w in weather_tags_found for w in enhanced_support):
+			tstalliness += 0.25
+
 	#baton pass
 	count = 0
 	for poke in team:
@@ -468,7 +474,7 @@ def analyzeTeam(team):
 			count[1] += 1
 
 	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
-		 tags.append('gravity')
+		tags.append('gravity')
 
 	#voltturn
 	count = 0
@@ -504,10 +510,8 @@ def analyzeTeam(team):
 			count[1] += 1
 	if count[0] > 1 and count[1] > 2:
 		tags.append('fear')
-		if 'sand' in tags:
-			tags.append('sandfear')
-		if 'hail' in tags:
-			tags.append('hailfear')
+		for wtag in weather_tags_found:
+			tags.append(wtag+'fear')
 		if 'trickroom' in tags:
 			tags.append('trickfear')
 

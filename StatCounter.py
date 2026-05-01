@@ -102,16 +102,50 @@ weatherTags = {
 	'sandstall', 'duststall', 'pollenstall', 'pheromonesstall', 'smogstall',
 	'fairyduststall', 'battleaurastall', 'pactivitystall', 'dreamscapestall',
 	'dragonforcestall', 'thunderstormstall', 'magnetospherestall', 'strongwindsstall',
-	'sandfear', 'hailfear',
+	'sunfear', 'rainfear', 'hailfear', 'bloodmoonfear', 'fogfear',
+	'sandfear', 'dustfear', 'pollenfear', 'pheromonesfear', 'smogfear',
+	'fairydustfear', 'battleaurafear', 'pactivityfear', 'dreamscapefear',
+	'dragonforcefear', 'thunderstormfear', 'magnetospherefear', 'strongwindsfear',
 }
 
-def writeTagTable(metagamefile, title, tags, totalWeight):
+weatherDisplayNames = {
+	'sun': 'Sun',
+	'rain': 'Rain',
+	'hail': 'Hail',
+	'bloodmoon': 'Blood Moon',
+	'fog': 'Fog',
+	'sand': 'Sandstorm',
+	'dust': 'Dust Storm',
+	'pollen': 'Pollen Storm',
+	'pheromones': 'Pheromones',
+	'smog': 'Smog',
+	'fairydust': 'Fairy Dust',
+	'battleaura': 'Battle Aura',
+	'pactivity': 'Paranormal Activity',
+	'dreamscape': 'Dreamscape',
+	'dragonforce': 'Dragon Force',
+	'thunderstorm': 'Thunderstorm',
+	'magnetosphere': 'Magnetosphere',
+	'strongwinds': 'Strong Winds',
+	'allweather': 'All Weather',
+	'multiweather': 'Multi Weather',
+	'weatherless': 'Weatherless',
+}
+
+for base, display in list(weatherDisplayNames.items()):
+	weatherDisplayNames['trick' + base] = 'Trick Room + ' + display
+	weatherDisplayNames[base + 'offense'] = display + ' Offense'
+	weatherDisplayNames[base + 'stall'] = display + ' Stall'
+	weatherDisplayNames[base + 'fear'] = display + ' FEAR'
+
+def writeTagTable(metagamefile, title, tags, totalWeight, displayNames=None):
 	if not tags:
 		return
 	metagamefile.write(title+'\n')
 	for i in range(0,len(tags)):
-		line = ' '+tags[i][0]
-		for j in range(len(tags[i][0]),30):
+		name = displayNames.get(tags[i][0], tags[i][0]) if displayNames else tags[i][0]
+		line = ' '+name
+		for j in range(len(name),30):
 			line = line + '.'
 		line = line + '%8.5f%%' % (100.0*tags[i][1]/max(1.0,totalWeight))
 		metagamefile.write(line+'\n')
@@ -373,7 +407,7 @@ if metagamefile:
 	weather=sorted(weather, key=lambda tags:-tags[1])
 
 	writeTagTable(metagamefile, 'Team types', teamTags, total['weighted'])
-	writeTagTable(metagamefile, 'Weather', weather, total['weighted'])
+	writeTagTable(metagamefile, 'Weather', weather, total['weighted'], weatherDisplayNames)
 
 	#stalliness
 	stallCounter=sorted(stallCounter, key=lambda stallCounter:stallCounter[0])

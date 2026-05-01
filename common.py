@@ -77,7 +77,7 @@ aliases={
 	'Mosskrat': ['Mosskrat-Tide-Bloom', 'Mosskrattidebloom'],
 	'Blurrun': ['Blurrun-Charged', 'Blurruncharged'],
 	'Botnyak': ['Botnyak-LB', 'Botnyaklb', 'Botnyak-LR', 'Botnyaklr', 'Botnyak-LG', 'Botnyaklg', 'Botnyak-DB', 'Botnyakdb', 'Botnyak-DR', 'Botnyakdr', 'Botnyak-DG', 'Botnyakdg', ],
-	# swse
+	# swse ^
 	'Dudunsparce': ['Dudunsparce-Three-Segment', 'Dudunsparcethreesegment'],
 	'Maushold': ['Maushold-Four', 'Mausholdfour'],
 	'Tatsugiri': ['Tatsugiridroopy', 'Tatsugiri-Droopy', 'Tatsugiristretchy', 'Tatsugiri-Stretchy'],
